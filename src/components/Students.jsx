@@ -297,8 +297,10 @@ function Students() {
                 }
                 if (uploadResult.files?.length) {
                     const uploadedFile = uploadResult.files[0];
-                    const rawUrl = uploadedFile.url || uploadedFile.filename;
-                    profileImagePath = rawUrl.startsWith("http") ? rawUrl : `${API}/uploads/${rawUrl}`;
+                    const rawUrl = uploadedFile.url || uploadedFile.filename || uploadedFile.path;
+                    profileImagePath = (rawUrl.startsWith("http://") || rawUrl.startsWith("https://"))
+                        ? rawUrl
+                        : `https://cznfksfrmdvvajbufavx.supabase.co/storage/v1/object/public/uploads/${String(rawUrl).replace(/^uploads\//, "")}`;
                 }
             }
 

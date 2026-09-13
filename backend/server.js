@@ -10,6 +10,43 @@ const { pool, supabase } = require("./db");
 
 pool.query("ALTER TABLE hostels ADD COLUMN IF NOT EXISTS daily_rent NUMERIC(10,2);").catch(err => console.error("Auto-migration error:", err));
 
+// Auto-migrate old relative image paths in PostgreSQL to Supabase Storage public URLs
+const migrateDbImageUrls = async () => {
+    try {
+        const supabaseUrl = process.env.SUPABASE_URL || "https://cznfksfrmdvvajbufavx.supabase.co";
+        const bucketName = process.env.SUPABASE_BUCKET || "uploads";
+        const publicBaseUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}`;
+
+        const cleanName = (str) => {
+            if (!str) return "";
+            let s = String(str).trim().replace(/\\/g, "/");
+            if (s.includes("/storage/v1/object/public/uploads/")) return "";
+            if (s.includes("/uploads/")) s = s.split("/uploads/").pop();
+            else if (s.startsWith("uploads/")) s = s.replace(/^uploads\//, "");
+            return s;
+        };
+
+        const updateTableField = async (tableName, idCol, fieldCol) => {
+            const res = await pool.query(`SELECT ${idCol}, ${fieldCol} FROM ${tableName} WHERE ${fieldCol} IS NOT NULL AND ${fieldCol} != '' AND ${fieldCol} NOT LIKE '%/storage/v1/object/public/uploads/%'`);
+            for (const row of res.rows) {
+                const fname = cleanName(row[fieldCol]);
+                if (fname) {
+                    const newUrl = `${publicBaseUrl}/${fname}`;
+                    await pool.query(`UPDATE ${tableName} SET ${fieldCol} = $1 WHERE ${idCol} = $2`, [newUrl, row[idCol]]);
+                }
+            }
+        };
+
+        await updateTableField("students", "student_id", "profile_image");
+        await updateTableField("hostel_owners", "owner_id", "profile_image");
+        await updateTableField("hostels", "hostel_id", "hostel_logo");
+        await updateTableField("hostel_images", "image_id", "image_path");
+    } catch (err) {
+        console.error("Image DB migration note:", err.message);
+    }
+};
+migrateDbImageUrls();
+
 const app = express();
 
 

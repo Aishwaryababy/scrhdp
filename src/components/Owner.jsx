@@ -311,8 +311,10 @@ function Owner() {
                     const uploadResult = await uploadRes.json();
                     if (uploadResult.success && uploadResult.files.length > 0) {
                         const uploadedFile = uploadResult.files[0];
-                        const rawUrl = uploadedFile.url || uploadedFile.filename;
-                        profileImagePath = rawUrl.startsWith("http") ? rawUrl : `${API}/uploads/${rawUrl}`;
+                        const rawUrl = uploadedFile.url || uploadedFile.filename || uploadedFile.path;
+                        profileImagePath = (rawUrl.startsWith("http://") || rawUrl.startsWith("https://"))
+                            ? rawUrl
+                            : `https://cznfksfrmdvvajbufavx.supabase.co/storage/v1/object/public/uploads/${String(rawUrl).replace(/^uploads\//, "")}`;
                     }
                 }
             }
@@ -415,8 +417,10 @@ function Owner() {
                 const uploadResult = await uploadRes.json();
                 if (uploadResult.success && uploadResult.files.length > 0) {
                     const uploadedFile = uploadResult.files[0];
-                    const rawUrl = uploadedFile.url || uploadedFile.filename;
-                    const logoUrl = rawUrl.startsWith("http") ? rawUrl : `${API}/uploads/${rawUrl}`;
+                    const rawUrl = uploadedFile.url || uploadedFile.filename || uploadedFile.path;
+                    const logoUrl = (rawUrl.startsWith("http://") || rawUrl.startsWith("https://"))
+                        ? rawUrl
+                        : `https://cznfksfrmdvvajbufavx.supabase.co/storage/v1/object/public/uploads/${String(rawUrl).replace(/^uploads\//, "")}`;
                     setHostelForm(prev => ({ ...prev, hostel_logo: logoUrl }));
                     showMessage("Logo uploaded successfully!");
                 }
@@ -489,8 +493,10 @@ function Owner() {
                     const uploadResult = await uploadRes.json();
                     if (uploadResult.success && uploadResult.files.length > 0) {
                         const uploadedFile = uploadResult.files[0];
-                        const rawUrl = uploadedFile.url || uploadedFile.filename;
-                        imagePath = rawUrl.startsWith("http") ? rawUrl : `${API}/uploads/${rawUrl}`;
+                        const rawUrl = uploadedFile.url || uploadedFile.filename || uploadedFile.path;
+                        imagePath = (rawUrl.startsWith("http://") || rawUrl.startsWith("https://"))
+                            ? rawUrl
+                            : `https://cznfksfrmdvvajbufavx.supabase.co/storage/v1/object/public/uploads/${String(rawUrl).replace(/^uploads\//, "")}`;
                     }
                 }
             }
