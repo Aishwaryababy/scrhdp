@@ -136,7 +136,7 @@ function Admin() {
     const fetchDashboardData = async () => {
         try {
             setLoading(true);
-            const response = await fetch("http://localhost:5000/dashboard/admin", {
+            const response = await fetch(`${API}/dashboard/admin`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const resData = await response.json();
@@ -155,7 +155,7 @@ function Admin() {
 
     const fetchStudents = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/admin/students?search=${studentSearch}`, {
+            const response = await fetch(`${API}/admin/students?search=${studentSearch}`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -167,7 +167,7 @@ function Admin() {
 
     const fetchOwners = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/admin/owners?search=${ownerSearch}`, {
+            const response = await fetch(`${API}/admin/owners?search=${ownerSearch}`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -179,7 +179,7 @@ function Admin() {
 
     const fetchHostels = async () => {
         try {
-            const response = await fetch("http://localhost:5000/admin/hostels", {
+            const response = await fetch(`${API}/admin/hostels`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -191,7 +191,7 @@ function Admin() {
 
     const fetchHostelDetails = async (hostelId) => {
         try {
-            const response = await fetch(`http://localhost:5000/admin/hostels/${hostelId}/details`, {
+            const response = await fetch(`${API}/admin/hostels/${hostelId}/details`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -208,7 +208,7 @@ function Admin() {
 
     const fetchBookings = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/admin/bookings?search=${bookingSearch}`, {
+            const response = await fetch(`${API}/admin/bookings?search=${bookingSearch}`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -220,7 +220,7 @@ function Admin() {
 
     const fetchReviews = async () => {
         try {
-            const response = await fetch("http://localhost:5000/admin/reviews", {
+            const response = await fetch(`${API}/admin/reviews`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -232,7 +232,7 @@ function Admin() {
 
     const fetchWishlist = async () => {
         try {
-            const response = await fetch("http://localhost:5000/admin/wishlist", {
+            const response = await fetch(`${API}/admin/wishlist`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -247,7 +247,7 @@ function Admin() {
 
     const fetchNotifications = async () => {
         try {
-            const response = await fetch("http://localhost:5000/admin/notifications", {
+            const response = await fetch(`${API}/admin/notifications`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -259,7 +259,7 @@ function Admin() {
 
     const fetchCities = async () => {
         try {
-            const response = await fetch("http://localhost:5000/admin/cities", {
+            const response = await fetch(`${API}/admin/cities`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -271,7 +271,7 @@ function Admin() {
 
     const fetchAccounts = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/admin/accounts?role=${accountRoleFilter}`, {
+            const response = await fetch(`${API}/admin/accounts?role=${accountRoleFilter}`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -283,7 +283,7 @@ function Admin() {
 
     const fetchReports = async () => {
         try {
-            const response = await fetch("http://localhost:5000/admin/reports", {
+            const response = await fetch(`${API}/admin/reports`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -298,7 +298,7 @@ function Admin() {
         const nextStatus = currentStatus === "Active" ? "Inactive" : "Active";
         if (!await confirm({ title: "Toggle User Status", message: `Are you sure you want to ${nextStatus === "Inactive" ? "deactivate" : "activate"} user ${user_username}?`, confirmText: `Yes, ${nextStatus === "Inactive" ? "Deactivate" : "Activate"}`, variant: nextStatus === "Inactive" ? "danger" : "primary" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/admin/accounts/${user_username}/status`, {
+            const response = await fetch(`${API}/admin/accounts/${user_username}/status`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -326,7 +326,7 @@ function Admin() {
         if (!newPassword) return;
         if (!await confirm({ title: "Reset Password", message: "Are you sure you want to reset the password?", confirmText: "Yes, Reset Password", variant: "warning" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/admin/accounts/${resetPasswordUsername}/password`, {
+            const response = await fetch(`${API}/admin/accounts/${resetPasswordUsername}/password`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -351,7 +351,7 @@ function Admin() {
         e.preventDefault();
         if (!await confirm({ title: "Update Student", message: "Are you sure you want to update this student?", confirmText: "Yes, Update", variant: "primary" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/admin/students/${editStudentForm.student_id}`, {
+            const response = await fetch(`${API}/admin/students/${editStudentForm.student_id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -373,7 +373,7 @@ function Admin() {
     const handleDeleteStudent = async (studentId) => {
         if (!await confirm({ title: "Delete Student Profile", message: "Delete this student profile?", confirmText: "Yes, Delete", variant: "danger" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/admin/students/${studentId}`, {
+            const response = await fetch(`${API}/admin/students/${studentId}`, {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${token}` }
             });
@@ -391,7 +391,7 @@ function Admin() {
         e.preventDefault();
         if (!await confirm({ title: "Update Owner Profile", message: "Are you sure you want to update this owner?", confirmText: "Yes, Update", variant: "primary" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/admin/owners/${editOwnerForm.owner_id}`, {
+            const response = await fetch(`${API}/admin/owners/${editOwnerForm.owner_id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -413,7 +413,7 @@ function Admin() {
     const handleDeleteOwner = async (ownerId) => {
         if (!await confirm({ title: "Delete Owner Account", message: "Delete owner? Hostels under them will be removed.", confirmText: "Yes, Delete Owner", variant: "danger" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/admin/owners/${ownerId}`, {
+            const response = await fetch(`${API}/admin/owners/${ownerId}`, {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${token}` }
             });
@@ -430,7 +430,7 @@ function Admin() {
     const handleUpdateHostelApprovalStatus = async (hostelId, newStatus) => {
         if (!await confirm({ title: "Update Hostel Approval Status", message: `Are you sure you want to update hostel approval status to ${newStatus}?`, confirmText: `Yes, Set to ${newStatus}`, variant: newStatus === "Approved" ? "primary" : "danger" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/hostels/${hostelId}/status`, {
+            const response = await fetch(`${API}/hostels/${hostelId}/status`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -452,7 +452,7 @@ function Admin() {
     const handleToggleHostelVerification = async (hostelId, currentVerify) => {
         if (!await confirm({ title: "Toggle Verification", message: "Are you sure you want to toggle verification?", confirmText: "Yes, Toggle", variant: "warning" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/admin/hostels/${hostelId}/verify`, {
+            const response = await fetch(`${API}/admin/hostels/${hostelId}/verify`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -474,7 +474,7 @@ function Admin() {
         e.preventDefault();
         if (!await confirm({ title: "Update Hostel", message: "Are you sure you want to update hostel details?", confirmText: "Yes, Save Details", variant: "primary" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/admin/hostels/${editHostelForm.hostel_id}`, {
+            const response = await fetch(`${API}/admin/hostels/${editHostelForm.hostel_id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -496,7 +496,7 @@ function Admin() {
     const handleDeleteHostel = async (hostelId) => {
         if (!await confirm({ title: "Delete Hostel", message: "Delete this hostel?", confirmText: "Yes, Delete", variant: "danger" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/admin/hostels/${hostelId}`, {
+            const response = await fetch(`${API}/admin/hostels/${hostelId}`, {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${token}` }
             });
@@ -513,7 +513,7 @@ function Admin() {
     const handleUpdateBookingStatus = async (bookingId, status) => {
         if (!await confirm({ title: "Update Booking Status", message: `Are you sure you want to update booking status to ${status}?`, confirmText: `Yes, Set to ${status}`, variant: status === "Approved" ? "primary" : "danger" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/admin/bookings/${bookingId}/status`, {
+            const response = await fetch(`${API}/admin/bookings/${bookingId}/status`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -534,7 +534,7 @@ function Admin() {
     const handleUpdateBookingPayment = async (bookingId, status) => {
         if (!await confirm({ title: "Update Payment Status", message: `Are you sure you want to update payment status to ${status}?`, confirmText: `Yes, Set to ${status}`, variant: status === "Paid" ? "primary" : "warning" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/admin/bookings/${bookingId}/payment`, {
+            const response = await fetch(`${API}/admin/bookings/${bookingId}/payment`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -555,7 +555,7 @@ function Admin() {
     const handleDeleteReview = async (reviewId) => {
         if (!await confirm({ title: "Delete Review", message: "Delete this review?", confirmText: "Yes, Delete", variant: "danger" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/admin/reviews/${reviewId}`, {
+            const response = await fetch(`${API}/admin/reviews/${reviewId}`, {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${token}` }
             });
@@ -572,7 +572,7 @@ function Admin() {
     const handleSendNotification = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch("http://localhost:5000/admin/notifications", {
+            const response = await fetch(`${API}/admin/notifications`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -594,7 +594,7 @@ function Admin() {
     const handleDeleteNotification = async (notifId) => {
         if (!await confirm({ title: "Delete Notification", message: "Are you sure you want to delete this notification?", confirmText: "Yes, Delete", variant: "danger" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/admin/notifications/${notifId}`, {
+            const response = await fetch(`${API}/admin/notifications/${notifId}`, {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${token}` }
             });
@@ -621,10 +621,10 @@ function Admin() {
         e.preventDefault();
         if (!await confirm({ title: "Save City", message: "Are you sure you want to save this city?", confirmText: "Yes, Save", variant: "primary" })) return;
         try {
-            let url = "http://localhost:5000/admin/cities";
+            let url = `${API}/admin/cities`;
             let method = "POST";
             if (cityForm.city_id) {
-                url = `http://localhost:5000/admin/cities/${cityForm.city_id}`;
+                url = `${API}/admin/cities/${cityForm.city_id}`;
                 method = "PUT";
             }
             const response = await fetch(url, {
@@ -651,7 +651,7 @@ function Admin() {
     const handleDeleteCity = async (cityId) => {
         if (!await confirm({ title: "Delete City", message: "Delete city?", confirmText: "Yes, Delete", variant: "danger" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/admin/cities/${cityId}`, {
+            const response = await fetch(`${API}/admin/cities/${cityId}`, {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${token}` }
             });

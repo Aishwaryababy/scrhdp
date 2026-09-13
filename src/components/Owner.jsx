@@ -155,7 +155,7 @@ function Owner() {
     const fetchDashboardData = async () => {
         try {
             setLoading(true);
-            const response = await fetch("http://localhost:5000/dashboard/owner", {
+            const response = await fetch(`${API}/dashboard/owner`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const resData = await response.json();
@@ -173,7 +173,7 @@ function Owner() {
 
     const fetchProfile = async () => {
         try {
-            const response = await fetch("http://localhost:5000/profile", {
+            const response = await fetch(`${API}/profile`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const resData = await response.json();
@@ -198,7 +198,7 @@ function Owner() {
 
     const fetchHostels = async () => {
         try {
-            const response = await fetch("http://localhost:5000/owner/hostels", {
+            const response = await fetch(`${API}/owner/hostels`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -210,7 +210,7 @@ function Owner() {
 
     const fetchHostelDetails = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5000/admin/hostels/${id}/details`, {
+            const response = await fetch(`${API}/admin/hostels/${id}/details`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -224,7 +224,7 @@ function Owner() {
 
     const fetchImages = async () => {
         try {
-            const response = await fetch("http://localhost:5000/owner/images", {
+            const response = await fetch(`${API}/owner/images`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -236,7 +236,7 @@ function Owner() {
 
     const fetchAmenities = async () => {
         try {
-            const response = await fetch("http://localhost:5000/owner/amenities", {
+            const response = await fetch(`${API}/owner/amenities`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -248,7 +248,7 @@ function Owner() {
 
     const fetchBookings = async () => {
         try {
-            const response = await fetch("http://localhost:5000/owner/bookings", {
+            const response = await fetch(`${API}/owner/bookings`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -260,7 +260,7 @@ function Owner() {
 
     const fetchReviews = async () => {
         try {
-            const response = await fetch("http://localhost:5000/owner/reviews", {
+            const response = await fetch(`${API}/owner/reviews`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -272,7 +272,7 @@ function Owner() {
 
     const fetchNotifications = async () => {
         try {
-            const response = await fetch("http://localhost:5000/owner/notifications", {
+            const response = await fetch(`${API}/owner/notifications`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -284,7 +284,7 @@ function Owner() {
 
     const fetchCities = async () => {
         try {
-            const response = await fetch("http://localhost:5000/admin/cities", {
+            const response = await fetch(`${API}/admin/cities`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const res = await response.json();
@@ -303,7 +303,7 @@ function Owner() {
             if (newImageFile) {
                 const uploadData = new FormData();
                 uploadData.append("images", newImageFile);
-                const uploadRes = await fetch("http://localhost:5000/upload", {
+                const uploadRes = await fetch(`${API}/upload`, {
                     method: "POST",
                     body: uploadData
                 });
@@ -312,12 +312,12 @@ function Owner() {
                     if (uploadResult.success && uploadResult.files.length > 0) {
                         const uploadedFile = uploadResult.files[0];
                         const rawUrl = uploadedFile.url || uploadedFile.filename;
-                        profileImagePath = rawUrl.startsWith("http") ? rawUrl : `http://localhost:5000/uploads/${rawUrl}`;
+                        profileImagePath = rawUrl.startsWith("http") ? rawUrl : `${API}/uploads/${rawUrl}`;
                     }
                 }
             }
 
-            const response = await fetch("http://localhost:5000/profile", {
+            const response = await fetch(`${API}/profile`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -346,7 +346,7 @@ function Owner() {
         e.preventDefault();
         if (!await confirm({ title: "Change Password", message: "Are you sure you want to change your password?", confirmText: "Yes, Change", variant: "warning" })) return;
         try {
-            const response = await fetch("http://localhost:5000/owner/change-password", {
+            const response = await fetch(`${API}/owner/change-password`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -366,7 +366,7 @@ function Owner() {
         e.preventDefault();
         if (!await confirm({ title: "Save Hostel", message: "Are you sure you want to save these hostel details?", confirmText: "Yes, Save", variant: "primary" })) return;
         try {
-            const url = editHostelId ? `http://localhost:5000/owner/hostels/${editHostelId}` : "http://localhost:5000/owner/hostels";
+            const url = editHostelId ? `${API}/owner/hostels/${editHostelId}` : `${API}/owner/hostels`;
             const method = editHostelId ? "PUT" : "POST";
             const response = await fetch(url, {
                 method: method,
@@ -407,7 +407,7 @@ function Owner() {
         try {
             const uploadData = new FormData();
             uploadData.append("images", file);
-            const uploadRes = await fetch("http://localhost:5000/upload", {
+            const uploadRes = await fetch(`${API}/upload`, {
                 method: "POST",
                 body: uploadData
             });
@@ -416,7 +416,7 @@ function Owner() {
                 if (uploadResult.success && uploadResult.files.length > 0) {
                     const uploadedFile = uploadResult.files[0];
                     const rawUrl = uploadedFile.url || uploadedFile.filename;
-                    const logoUrl = rawUrl.startsWith("http") ? rawUrl : `http://localhost:5000/uploads/${rawUrl}`;
+                    const logoUrl = rawUrl.startsWith("http") ? rawUrl : `${API}/uploads/${rawUrl}`;
                     setHostelForm(prev => ({ ...prev, hostel_logo: logoUrl }));
                     showMessage("Logo uploaded successfully!");
                 }
@@ -456,7 +456,7 @@ function Owner() {
     const handleDeleteHostel = async (id) => {
         if (!await confirm({ title: "Delete Property", message: "Are you sure you want to delete this property?", confirmText: "Yes, Delete", variant: "danger" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/owner/hostels/${id}`, {
+            const response = await fetch(`${API}/owner/hostels/${id}`, {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${token}` }
             });
@@ -481,7 +481,7 @@ function Owner() {
             if (newImageUploadFile) {
                 const uploadData = new FormData();
                 uploadData.append("images", newImageUploadFile);
-                const uploadRes = await fetch("http://localhost:5000/upload", {
+                const uploadRes = await fetch(`${API}/upload`, {
                     method: "POST",
                     body: uploadData
                 });
@@ -490,12 +490,12 @@ function Owner() {
                     if (uploadResult.success && uploadResult.files.length > 0) {
                         const uploadedFile = uploadResult.files[0];
                         const rawUrl = uploadedFile.url || uploadedFile.filename;
-                        imagePath = rawUrl.startsWith("http") ? rawUrl : `http://localhost:5000/uploads/${rawUrl}`;
+                        imagePath = rawUrl.startsWith("http") ? rawUrl : `${API}/uploads/${rawUrl}`;
                     }
                 }
             }
 
-            const response = await fetch("http://localhost:5000/owner/images", {
+            const response = await fetch(`${API}/owner/images`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -521,7 +521,7 @@ function Owner() {
     const handleDeleteImage = async (id) => {
         if (!await confirm({ title: "Delete Image", message: "Are you sure you want to delete this image?", confirmText: "Yes, Delete", variant: "danger" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/owner/images/${id}`, {
+            const response = await fetch(`${API}/owner/images/${id}`, {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${token}` }
             });
@@ -544,7 +544,7 @@ function Owner() {
         const hostelIdToUse = newAmenityForm.hostel_id || editHostelId;
         if (!hostelIdToUse || !newAmenityForm.amenity_name) return;
         try {
-            const response = await fetch("http://localhost:5000/owner/amenities", {
+            const response = await fetch(`${API}/owner/amenities`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -569,7 +569,7 @@ function Owner() {
     const handleDeleteAmenity = async (id) => {
         if (!await confirm({ title: "Delete Amenity", message: "Are you sure you want to delete this amenity?", confirmText: "Yes, Delete", variant: "danger" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/owner/amenities/${id}`, {
+            const response = await fetch(`${API}/owner/amenities/${id}`, {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${token}` }
             });
@@ -594,7 +594,7 @@ function Owner() {
             variant: status === "Approved" ? "primary" : status === "Rejected" ? "danger" : "warning"
         })) return;
         try {
-            const response = await fetch(`http://localhost:5000/bookings/${bookingId}/status`, {
+            const response = await fetch(`${API}/bookings/${bookingId}/status`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -616,7 +616,7 @@ function Owner() {
     const handleSaveReply = async (reviewId, reply) => {
         if (!await confirm({ title: "Save Reply", message: "Are you sure you want to save this reply?", confirmText: "Yes, Post Reply", variant: "primary" })) return;
         try {
-            const response = await fetch(`http://localhost:5000/owner/reviews/${reviewId}/reply`, {
+            const response = await fetch(`${API}/owner/reviews/${reviewId}/reply`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -638,7 +638,7 @@ function Owner() {
 
     const handleMarkNotificationRead = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5000/owner/notifications/${id}/read`, {
+            const response = await fetch(`${API}/owner/notifications/${id}/read`, {
                 method: "PUT",
                 headers: { "Authorization": `Bearer ${token}` }
             });
@@ -2100,7 +2100,7 @@ function Owner() {
                                             <div><span className="mu-id-badge">#{b.booking_id}</span></div>
                                             <div className="mu-user-cell">
                                                 {b.profile_image ? (
-                                                    <img src={b.profile_image.startsWith("http") ? b.profile_image : `http://localhost:5000/${b.profile_image}`} className="rounded-circle" style={{ width: "32px", height: "32px", objectFit: "cover" }} alt="student" />
+                                                    <img src={b.profile_image.startsWith("http") ? b.profile_image : `${API}/${b.profile_image}`} className="rounded-circle" style={{ width: "32px", height: "32px", objectFit: "cover" }} alt="student" />
                                                 ) : (
                                                     <div className="mu-avatar" style={{ width: "32px", height: "32px", fontSize: "11px" }}>{b.student_name.charAt(0)}</div>
                                                 )}
@@ -2278,7 +2278,7 @@ function Owner() {
                             <div className="modal-body">
                                 <div className="text-center mb-3">
                                     {selectedBooking.profile_image ? (
-                                        <img src={selectedBooking.profile_image.startsWith("http") ? selectedBooking.profile_image : `http://localhost:5000/${selectedBooking.profile_image}`} className="rounded-circle img-thumbnail" style={{ width: "90px", height: "90px", objectFit: "cover" }} alt="student" />
+                                        <img src={selectedBooking.profile_image.startsWith("http") ? selectedBooking.profile_image : `${API}/${selectedBooking.profile_image}`} className="rounded-circle img-thumbnail" style={{ width: "90px", height: "90px", objectFit: "cover" }} alt="student" />
                                     ) : (
                                         <div className="mu-avatar mx-auto" style={{ width: "90px", height: "90px", fontSize: "28px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", background: "#3b82f6", color: "white" }}>
                                             {selectedBooking.student_name.charAt(0)}
