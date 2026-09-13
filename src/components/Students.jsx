@@ -4,7 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { toast } from "react-toastify";
 import { useConfirm } from "../context/ConfirmContext";
 
-import API, { getImageUrl, getTableImagePath, handleImageError } from "../config/api";
+import API, { getImageUrl, handleImageError } from "../config/api";
 
 function Students() {
     const navigate = useNavigate();
@@ -580,24 +580,17 @@ function Students() {
         navigate("/login");
     };
 
-    useEffect(() => {
-        if (activeItem === "Browse Hostels" && hostels.length === 0) {
-            fetchHostels();
-        }
-    }, [activeItem]);
-
     const filteredHostels = useMemo(() => {
         const search = hostelSearch.trim().toLowerCase();
         const maxRent = Number(rentFilter);
         return hostels.filter((hostel) => {
             const matchesSearch = !search ||
                 String(hostel.hostel_name || "").toLowerCase().includes(search) ||
-                String(hostel.address || "").toLowerCase().includes(search) ||
-                String(hostel.city_name || "").toLowerCase().includes(search);
-            const matchesCity = !cityFilter || String(hostel.city_name || "").toLowerCase() === cityFilter.toLowerCase();
-            const matchesGender = !genderFilter || String(hostel.gender_allowed || "").toLowerCase() === genderFilter.toLowerCase();
+                String(hostel.address || "").toLowerCase().includes(search);
+            const matchesCity = !cityFilter || String(hostel.city_name || "") === cityFilter;
+            const matchesGender = !genderFilter || String(hostel.gender_allowed || "") === genderFilter;
             const rent = Number(hostel.monthly_rent || hostel.rent || 0);
-            const matchesRent = !rentFilter || isNaN(maxRent) || maxRent <= 0 || (rent <= maxRent);
+            const matchesRent = !rentFilter || (rent > 0 && rent <= maxRent);
             return matchesSearch && matchesCity && matchesGender && matchesRent;
         });
     }, [hostels, hostelSearch, cityFilter, genderFilter, rentFilter]);
@@ -1263,7 +1256,7 @@ function Students() {
                                                 <div className="col-md-6 col-xl-4" key={h.hostel_id}>
                                                     <div className="card-soft hostel-card">
                                                         <div className="position-relative">
-                                                            <img className="hostel-img" src={getImageUrl(h.hostel_logo, "https://placehold.co/500x250?text=Hostel")} onError={(e) => handleImageError(e, h.hostel_logo, "https://placehold.co/500x250?text=Hostel")} alt={h.hostel_name || "hostel"} />
+                                                            <img className="hostel-img" src={getImageUrl(h.hostel_logo, "https://placehold.co/500x250")} onError={(e) => handleImageError(e, h.hostel_logo, "https://placehold.co/500x250")} alt={h.hostel_name || "hostel"} />
                                                             <div className="position-absolute top-0 end-0 m-2 d-flex gap-2" style={{ zIndex: 10 }}>
                                                                 <button 
                                                                     type="button"
@@ -1317,7 +1310,7 @@ function Students() {
                                             <div className="col-md-6 col-xl-4" key={h.hostel_id}>
                                                 <div className="card-soft hostel-card">
                                                     <div className="position-relative">
-                                                        <img className="hostel-img" src={getImageUrl(h.hostel_logo, "https://placehold.co/500x250?text=Hostel")} onError={(e) => handleImageError(e, h.hostel_logo, "https://placehold.co/500x250?text=Hostel")} alt={h.hostel_name || "hostel"} />
+                                                        <img className="hostel-img" src={getImageUrl(h.hostel_logo, "https://placehold.co/500x250")} onError={(e) => handleImageError(e, h.hostel_logo, "https://placehold.co/500x250")} alt={h.hostel_name || "hostel"} />
                                                         <div className="position-absolute top-0 end-0 m-2 d-flex gap-2" style={{ zIndex: 10 }}>
                                                             <button 
                                                                 type="button"
@@ -1482,7 +1475,7 @@ function Students() {
                                                             style={{ border: activeReviewHostel?.hostel_id === h.hostel_id ? "2px solid #2563eb" : "1px solid rgba(15,23,42,0.08)", cursor: "pointer", transition: "all .2s" }}
                                                             onClick={() => setActiveReviewHostel(activeReviewHostel?.hostel_id === h.hostel_id ? null : h)}
                                                         >
-                                                            <img src={h.hostel_logo || "https://placehold.co/60x60"} alt={h.hostel_name} style={{ width: 48, height: 48, borderRadius: 10, objectFit: "cover" }} />
+                                                            <img src={getImageUrl(h.hostel_logo, "https://placehold.co/60x60")} onError={(e) => handleImageError(e, h.hostel_logo, "https://placehold.co/60x60")} alt={h.hostel_name} style={{ width: 48, height: 48, borderRadius: 10, objectFit: "cover" }} />
                                                             <div className="flex-grow-1">
                                                                 <div className="fw-bold" style={{ fontSize: 14 }}>{h.hostel_name}</div>
                                                                 <div className="text-muted" style={{ fontSize: 11 }}>Left on {new Date(h.leaving_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}</div>
@@ -1701,12 +1694,11 @@ function Students() {
                                         {hostelDetails.images.map((img, index) => (
                                             <div className="col-4" key={img.image_id || index}>
                                                 <img 
-                                                    src={getImageUrl(img.image_path || img.image_url, "https://placehold.co/500x250?text=Gallery")} 
-                                                    onError={(e) => handleImageError(e, img.image_path || img.image_url, "https://placehold.co/500x250?text=Gallery")}
+                                                    src={img.image_path || img.image_url} 
                                                     className="w-100 rounded shadow-sm" 
                                                     style={{ height: 160, objectFit: "cover", cursor: "pointer" }} 
                                                     alt={img.image_title || "hostel gallery"} 
-                                                    onClick={() => setSelectedImage(getImageUrl(img.image_path || img.image_url))}
+                                                    onClick={() => setSelectedImage(img.image_path || img.image_url)}
                                                 />
                                             </div>
                                         ))}

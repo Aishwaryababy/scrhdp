@@ -1,65 +1,73 @@
+export const SUPABASE_URL = "https://cznfksfrmdvvajbufavx.supabase.co";
+export const SUPABASE_BUCKET = "uploads";
+
 export const API = import.meta.env.VITE_API_URL !== undefined && import.meta.env.VITE_API_URL !== ""
     ? import.meta.env.VITE_API_URL
     : (import.meta.env.DEV ? "http://localhost:5000" : "");
 
-export const SUPABASE_STORAGE_URL = "https://cznfksfrmdvvajbufavx.supabase.co/storage/v1/object/public/uploads";
+export const getCleanFileName = (path) => {
+    if (!path) return "";
+    const str = String(path).trim().replace(/\\/g, "/");
+    if (str.includes("/uploads/")) {
+        return str.split("/uploads/").pop();
+    }
+    if (str.startsWith("uploads/")) {
+        return str.replace(/^uploads\//, "");
+    }
+    return str;
+};
 
-/**
- * Returns primary image URL:
- * - If full URL (http/https/data:), returns as is.
- * - Otherwise, tries Supabase Storage Bucket first.
- */
-export const getImageUrl = (path, fallback = "https://placehold.co/500x250?text=No+Image") => {
+export const getSupabaseStorageUrl = (path) => {
+    const filename = getCleanFileName(path);
+    if (!filename) return null;
+    return `${SUPABASE_URL}/storage/v1/object/public/${SUPABASE_BUCKET}/${filename}`;
+};
+
+export const getBackendUploadUrl = (path) => {
+    const filename = getCleanFileName(path);
+    if (!filename) return null;
+    return `${API}/uploads/${filename}`;
+};
+
+export const getImageUrl = (path, fallback = null) => {
     if (!path || path === "null" || path === "undefined" || (typeof path === "string" && path.trim() === "")) {
         return fallback;
     }
     const strPath = String(path).trim();
-    if (strPath.startsWith("http://") || strPath.startsWith("https://") || strPath.startsWith("data:")) {
+
+    if (strPath.startsWith("data:") || strPath.includes(".supabase.co/storage/v1/object/public/")) {
         return strPath;
     }
-    const cleanPath = strPath.replace(/\\/g, "/").replace(/^\/+/, "");
-    const filename = cleanPath.startsWith("uploads/") ? cleanPath.replace(/^uploads\//, "") : cleanPath;
-    return `${SUPABASE_STORAGE_URL}/${filename}`;
-};
 
-/**
- * Returns secondary table upload path (relative path on backend API).
- */
-export const getTableImagePath = (path) => {
-    if (!path || path === "null" || path === "undefined" || (typeof path === "string" && path.trim() === "")) {
-        return null;
-    }
-    const strPath = String(path).trim();
-    if (strPath.startsWith("http://") || strPath.startsWith("https://") || strPath.startsWith("data:")) {
+    if ((strPath.startsWith("http://") || strPath.startsWith("https://")) && !strPath.includes("localhost:5000")) {
         return strPath;
     }
-    const cleanPath = strPath.replace(/\\/g, "/").replace(/^\/+/, "");
-    if (cleanPath.startsWith("uploads/")) {
-        return `${API}/${cleanPath}`;
+
+    const supabaseUrl = getSupabaseStorageUrl(strPath);
+    if (supabaseUrl) {
+        return supabaseUrl;
     }
-    return `${API}/uploads/${cleanPath}`;
+
+    return getBackendUploadUrl(strPath) || fallback;
 };
 
-/**
- * Conditional image error handler:
- * 1. If image fails to load from Supabase Storage (triggers onError), try backend table path (${API}/uploads/filename).
- * 2. If backend table path also fails, load default fallback placeholder.
- */
-export const handleImageError = (e, originalPath, fallback = "https://placehold.co/500x250?text=No+Image") => {
-    const img = e.currentTarget;
-    const currentSrc = img.src;
+export const handleImageError = (e, originalPath, fallback = null) => {
+    const target = e.currentTarget || e.target;
+    if (!target) return;
 
-    if (!img.dataset.triedTablePath && originalPath) {
-        img.dataset.triedTablePath = "true";
-        const tablePath = getTableImagePath(originalPath);
-        if (tablePath && currentSrc !== tablePath) {
-            img.src = tablePath;
+    const fallbackUrl = fallback || "https://placehold.co/500x300?text=No+Image";
+
+    if (!target.dataset.triedBackend && originalPath) {
+        target.dataset.triedBackend = "true";
+        const backendUrl = getBackendUploadUrl(originalPath);
+        if (backendUrl && backendUrl !== target.src) {
+            target.src = backendUrl;
             return;
         }
     }
 
-    if (fallback && currentSrc !== fallback) {
-        img.src = fallback;
+    if (target.src !== fallbackUrl) {
+        target.src = fallbackUrl;
     }
 };
 
