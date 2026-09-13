@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useConfirm } from "../context/ConfirmContext";
-import API, { getImageUrl } from "../config/api";
+import API, { getImageUrl, handleImageError } from "../config/api";
 
 function Admin() {
     const navigate = useNavigate();
@@ -1659,7 +1659,7 @@ function Admin() {
                                             <div className="modal-body text-dark">
                                                 <div className="row">
                                                     <div className="col-md-4 text-center mb-3">
-                                                        <img src={getImageUrl(selectedOwner.profile_image, "https://placehold.co/150")} className="img-thumbnail rounded-circle" style={{ width: "150px", height: "150px", objectFit: "cover" }} alt="profile" />
+                                                        <img src={getImageUrl(selectedOwner.profile_image, "https://placehold.co/150")} onError={(e) => handleImageError(e, selectedOwner.profile_image, "https://placehold.co/150")} className="img-thumbnail rounded-circle" style={{ width: "150px", height: "150px", objectFit: "cover" }} alt="profile" />
                                                     </div>
                                                     <div className="col-md-8">
                                                         <table className="table table-sm">

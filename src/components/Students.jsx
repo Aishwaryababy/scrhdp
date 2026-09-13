@@ -4,7 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { toast } from "react-toastify";
 import { useConfirm } from "../context/ConfirmContext";
 
-import API, { getImageUrl } from "../config/api";
+import API, { getImageUrl, getTableImagePath, handleImageError } from "../config/api";
 
 function Students() {
     const navigate = useNavigate();
@@ -580,17 +580,24 @@ function Students() {
         navigate("/login");
     };
 
+    useEffect(() => {
+        if (activeItem === "Browse Hostels" && hostels.length === 0) {
+            fetchHostels();
+        }
+    }, [activeItem]);
+
     const filteredHostels = useMemo(() => {
         const search = hostelSearch.trim().toLowerCase();
         const maxRent = Number(rentFilter);
         return hostels.filter((hostel) => {
             const matchesSearch = !search ||
                 String(hostel.hostel_name || "").toLowerCase().includes(search) ||
-                String(hostel.address || "").toLowerCase().includes(search);
-            const matchesCity = !cityFilter || String(hostel.city_name || "") === cityFilter;
-            const matchesGender = !genderFilter || String(hostel.gender_allowed || "") === genderFilter;
+                String(hostel.address || "").toLowerCase().includes(search) ||
+                String(hostel.city_name || "").toLowerCase().includes(search);
+            const matchesCity = !cityFilter || String(hostel.city_name || "").toLowerCase() === cityFilter.toLowerCase();
+            const matchesGender = !genderFilter || String(hostel.gender_allowed || "").toLowerCase() === genderFilter.toLowerCase();
             const rent = Number(hostel.monthly_rent || hostel.rent || 0);
-            const matchesRent = !rentFilter || (rent > 0 && rent <= maxRent);
+            const matchesRent = !rentFilter || isNaN(maxRent) || maxRent <= 0 || (rent <= maxRent);
             return matchesSearch && matchesCity && matchesGender && matchesRent;
         });
     }, [hostels, hostelSearch, cityFilter, genderFilter, rentFilter]);
@@ -1083,7 +1090,7 @@ function Students() {
 
                         <div className="tb-avatar-wrap" onClick={() => setActiveItem("My Profile")}>
                             {profileFormData.profile_image ? (
-                                <img src={profileFormData.profile_image} className="tb-avatar" style={{ objectFit: "cover" }} alt="profile" />
+                                <img src={getImageUrl(profileFormData.profile_image)} onError={(e) => handleImageError(e, profileFormData.profile_image)} className="tb-avatar" style={{ objectFit: "cover" }} alt="profile" />
                             ) : (
                                 <div className="tb-avatar">{(profileFormData.full_name || username).charAt(0).toUpperCase()}</div>
                             )}
@@ -1224,7 +1231,7 @@ function Students() {
                                     <form className="card-soft p-4 text-dark" onSubmit={handleProfileUpdate}>
                                         <div className="row g-3">
                                             <div className="col-md-3 text-center">
-                                                {profileFormData.profile_image ? <img src={profileFormData.profile_image} className="rounded-circle shadow-sm" style={{ width: 150, height: 150, objectFit: "cover" }} alt="profile" /> : <div className="avatar mx-auto" style={{ width: 150, height: 150, fontSize: 50 }}>{(profileFormData.full_name || username).charAt(0).toUpperCase()}</div>}
+                                                {profileFormData.profile_image ? <img src={getImageUrl(profileFormData.profile_image)} onError={(e) => handleImageError(e, profileFormData.profile_image)} className="rounded-circle shadow-sm" style={{ width: 150, height: 150, objectFit: "cover" }} alt="profile" /> : <div className="avatar mx-auto" style={{ width: 150, height: 150, fontSize: 50 }}>{(profileFormData.full_name || username).charAt(0).toUpperCase()}</div>}
                                                 {profileEditing && <input className="form-control form-control-sm mt-3" type="file" accept="image/*" onChange={(e) => setNewImageFile(e.target.files?.[0] || null)} />}
                                             </div>
                                             <div className="col-md-9 text-start">
@@ -1256,7 +1263,7 @@ function Students() {
                                                 <div className="col-md-6 col-xl-4" key={h.hostel_id}>
                                                     <div className="card-soft hostel-card">
                                                         <div className="position-relative">
-                                                            <img className="hostel-img" src={getImageUrl(h.hostel_logo, "https://placehold.co/500x250")} alt={h.hostel_name || "hostel"} />
+                                                            <img className="hostel-img" src={getImageUrl(h.hostel_logo, "https://placehold.co/500x250?text=Hostel")} onError={(e) => handleImageError(e, h.hostel_logo, "https://placehold.co/500x250?text=Hostel")} alt={h.hostel_name || "hostel"} />
                                                             <div className="position-absolute top-0 end-0 m-2 d-flex gap-2" style={{ zIndex: 10 }}>
                                                                 <button 
                                                                     type="button"
@@ -1310,7 +1317,7 @@ function Students() {
                                             <div className="col-md-6 col-xl-4" key={h.hostel_id}>
                                                 <div className="card-soft hostel-card">
                                                     <div className="position-relative">
-                                                        <img className="hostel-img" src={h.hostel_logo || "https://placehold.co/500x250"} alt={h.hostel_name || "hostel"} />
+                                                        <img className="hostel-img" src={getImageUrl(h.hostel_logo, "https://placehold.co/500x250?text=Hostel")} onError={(e) => handleImageError(e, h.hostel_logo, "https://placehold.co/500x250?text=Hostel")} alt={h.hostel_name || "hostel"} />
                                                         <div className="position-absolute top-0 end-0 m-2 d-flex gap-2" style={{ zIndex: 10 }}>
                                                             <button 
                                                                 type="button"
@@ -1694,11 +1701,12 @@ function Students() {
                                         {hostelDetails.images.map((img, index) => (
                                             <div className="col-4" key={img.image_id || index}>
                                                 <img 
-                                                    src={img.image_path || img.image_url} 
+                                                    src={getImageUrl(img.image_path || img.image_url, "https://placehold.co/500x250?text=Gallery")} 
+                                                    onError={(e) => handleImageError(e, img.image_path || img.image_url, "https://placehold.co/500x250?text=Gallery")}
                                                     className="w-100 rounded shadow-sm" 
                                                     style={{ height: 160, objectFit: "cover", cursor: "pointer" }} 
                                                     alt={img.image_title || "hostel gallery"} 
-                                                    onClick={() => setSelectedImage(img.image_path || img.image_url)}
+                                                    onClick={() => setSelectedImage(getImageUrl(img.image_path || img.image_url))}
                                                 />
                                             </div>
                                         ))}
