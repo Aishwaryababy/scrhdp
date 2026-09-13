@@ -26,6 +26,18 @@
       "destination": "/api/index.js"
     },
     {
+      "source": "/hostels",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/hostels/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/student/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
       "source": "/dashboard/(.*)",
       "destination": "/api/index.js"
     },
@@ -42,15 +54,19 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/hostels/(.*)",
-      "destination": "/api/index.js"
-    },
-    {
       "source": "/reviews/(.*)",
       "destination": "/api/index.js"
     },
     {
       "source": "/wishlist/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/cities/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/payments/(.*)",
       "destination": "/api/index.js"
     }
   ]

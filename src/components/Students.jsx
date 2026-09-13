@@ -4,7 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { toast } from "react-toastify";
 import { useConfirm } from "../context/ConfirmContext";
 
-import API from "../config/api";
+import API, { getImageUrl } from "../config/api";
 
 function Students() {
     const navigate = useNavigate();
@@ -1256,7 +1256,7 @@ function Students() {
                                                 <div className="col-md-6 col-xl-4" key={h.hostel_id}>
                                                     <div className="card-soft hostel-card">
                                                         <div className="position-relative">
-                                                            <img className="hostel-img" src={h.hostel_logo || "https://placehold.co/500x250"} alt={h.hostel_name || "hostel"} />
+                                                            <img className="hostel-img" src={getImageUrl(h.hostel_logo, "https://placehold.co/500x250")} alt={h.hostel_name || "hostel"} />
                                                             <div className="position-absolute top-0 end-0 m-2 d-flex gap-2" style={{ zIndex: 10 }}>
                                                                 <button 
                                                                     type="button"

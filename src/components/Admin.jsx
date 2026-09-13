@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useConfirm } from "../context/ConfirmContext";
-import API from "../config/api";
+import API, { getImageUrl } from "../config/api";
 
 function Admin() {
     const navigate = useNavigate();
@@ -117,19 +117,7 @@ function Admin() {
     };
 
     const getProfileImageUrl = (path) => {
-        if (!path || path === "null" || path === "undefined" || path.trim() === "") {
-            return null;
-        }
-        if (path.startsWith("http://") || path.startsWith("https://")) {
-            return path;
-        }
-        const cleanPath = path.replace(/\\/g, "/");
-        if (cleanPath.startsWith("uploads/")) {
-            return `${API}/${cleanPath}`;
-        } else if (cleanPath.startsWith("/uploads/")) {
-            return `${API}${cleanPath}`;
-        }
-        return `${API}/uploads/${cleanPath}`;
+        return getImageUrl(path, null);
     };
 
     // --- API Fetch ---
@@ -1671,7 +1659,7 @@ function Admin() {
                                             <div className="modal-body text-dark">
                                                 <div className="row">
                                                     <div className="col-md-4 text-center mb-3">
-                                                        <img src={selectedOwner.profile_image || "https://placehold.co/150"} className="img-thumbnail rounded-circle" style={{ width: "150px", height: "150px", objectFit: "cover" }} alt="profile" />
+                                                        <img src={getImageUrl(selectedOwner.profile_image, "https://placehold.co/150")} className="img-thumbnail rounded-circle" style={{ width: "150px", height: "150px", objectFit: "cover" }} alt="profile" />
                                                     </div>
                                                     <div className="col-md-8">
                                                         <table className="table table-sm">

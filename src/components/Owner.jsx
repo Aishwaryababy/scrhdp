@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useConfirm } from "../context/ConfirmContext";
-import API from "../config/api";
+import API, { getImageUrl } from "../config/api";
 
 function Owner() {
     const navigate = useNavigate();
